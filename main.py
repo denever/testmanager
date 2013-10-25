@@ -1,33 +1,42 @@
+import random
 from sqlalchemy.orm import sessionmaker
 from model import engine, Alumn, AlumnClass, Question
+
+def create_test():
+    print 'Print test for a class'
+    for cls in session.query(AlumnClass).order_by(AlumnClass.id):
+        print '\t', cls.id, cls.name
+
+    cls_id = raw_input('Select a class id: ')
+
+    if not cls_id: return False
+
+    cls = session.query(AlumnClass).filter(AlumnClass.id == cls_id).first()
+
+    if not cls: return False
+
+    test_size = int(raw_input('Numero di domande? '))
+
+    for alumn in cls.alumns:
+        query = session.query(Question)
+        if alumn.dsa:
+            query = query.filter(Question.qtype != 'OC')
+        qs = query.all()
+        test = list()
+        loop = True
+        while len(test) < test_size:
+            random_choice = random.choice(qs)
+            if random_choice not in test:
+                test.append(random_choice)
+        print test
+    return True
+
 
 if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
     loop = True
-    data = dict()
     while loop:
-        data['name'] = raw_input("Class name: ")
-        if not data['name']: break
-        ac = AlumnClass(name=data['name'])
-        print ac
-        session.add(ac)
-        session.commit()
-        print 'Class %(name)s created.' % data
-        loop = False if raw_input('Create another class? ') in ("N",'n','No','no') else True
-
-    data = dict()
-    loop = True
-    while loop:
-        data['name'] = raw_input("Name: ")
-        data['surname'] = raw_input("Surname: ")
-        data['dsa'] = True if raw_input("dsa: ") in ("Y",'y','Yes','yes') else False
-        alumn = Alumn(**data)
-        print 'Alumn %(surname)s %(name)s %(dsa)s created.' % data
-        print alumn
-        alumn.belongs = session.query(AlumnClass).first()
-        session.add(alumn)
-        session.commit()
-        loop = False if raw_input("Continue? ") in ("N",'n','No','no') else True
-
+        loop = create_test()
+#        loop = False if raw_input("Continue? ") in ("N",'n','No','no') else print_alumns()
