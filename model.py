@@ -1,11 +1,11 @@
 from sqlalchemy import engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Text
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.types import Enum
 
-engine = engine.create_engine('sqlite:////home/denever/prova.db')
+engine = engine.create_engine('sqlite:///prova.db')
 Base = declarative_base()
 
 class Alumn(Base):
@@ -36,5 +36,21 @@ class AlumnClass(Base):
     def __repr__(self):
         return "<%s: %s %s>" % (self.__tablename__, self.id, self.name)
 
+
+class Question(Base):
+    __tablename__ = 'questions'
+
+    id = Column(Integer, primary_key=True)
+    question = Column(String)
+    answers = Column(Text)
+    qtype = Column(Enum('BC', 'SC', 'MC', 'OC'))
+
+    def __init__(self, qtype, question, answers):
+        self.qtype = qtype
+        self.question = question
+        self.answers = answers
+
+    def __repr__(self):
+        return "<%s: %s %s>" % (self.__tablename__, self.qtype, self.question)
 
 Base.metadata.create_all(engine)
