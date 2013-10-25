@@ -19,8 +19,8 @@ if __name__ == '__main__':
                 answer = raw_input('Answer %s:' % answer_id)
                 if not answer: break
                 data['answers'] += '\\item %s\n' % answer
-                print data['answers']
                 answer_id += 1
         qa = Question(**data)
         session.add(qa)
         session.commit()
+        loop = False if raw_input("Continue? ") in ("N",'n','No','no') else True
