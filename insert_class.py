@@ -16,3 +16,6 @@ if __name__ == '__main__':
         session.commit()
         print 'Class %(name)s created.' % data
         loop = False if raw_input('Create another class? ') in ("N",'n','No','no') else True
+
+    for cls in session.query(AlumnClass).order_by(AlumnClass.id):
+        print '\t', cls.id, cls.name
