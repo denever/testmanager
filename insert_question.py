@@ -19,7 +19,7 @@ if __name__ == '__main__':
     data = dict()
     loop = True
     while loop:
-        data['qtype'] = raw_input("Type: ")
+        data['qtype'] = raw_input("Type ('BC', 'SC', 'MC', 'OC'): ")
         if not data['qtype']:
             loop = False if raw_input("Continue? ") in ("N",'n','No','no') else True
             continue
