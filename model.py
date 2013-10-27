@@ -42,6 +42,16 @@ class AlumnClass(Base):
     def __repr__(self):
         return "<%s: %s %s>" % (self.__tablename__, self.id, self.name)
 
+class Topic(Base):
+    __tablename__ = 'topics'
+
+    id = Column(Integer, primary_key=True)
+    did_unit = Column(String, unique=True)
+    title = Column(String)
+    questions = relationship("Question", backref='topic')
+
+    def __repr__(self):
+        return "<%s: %s %s>" % (self.__tablename__, self.id, self.title)
 
 class Question(Base):
     __tablename__ = 'questions'
@@ -50,6 +60,7 @@ class Question(Base):
     question = Column(String)
     answers = Column(Text)
     qtype = Column(Enum('BC', 'SC', 'MC', 'OC'))
+    topic_id = Column(Integer, ForeignKey('topics.id'))
 
     def __init__(self, qtype, question, answers):
         self.qtype = qtype
