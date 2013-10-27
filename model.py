@@ -26,12 +26,18 @@ class Alumn(Base):
     def __repr__(self):
         return "<%s: %s %s %s>" % (self.__tablename__, self.surname, self.name, self.dsa)
 
+    def __str__(self):
+        return 'Alumn %s %s %s' % (self.surname, self.name, self.dsa)
+
 class AlumnClass(Base):
     __tablename__ = 'classes'
 
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
     alumns = relationship("Alumn", backref='belongs')
+
+    def dsa_alumns(self):
+        return [alumn for alumn in self.alumns if alumn.dsa]
 
     def __repr__(self):
         return "<%s: %s %s>" % (self.__tablename__, self.id, self.name)
