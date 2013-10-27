@@ -8,8 +8,8 @@ if __name__ == '__main__':
     data = dict()
     loop = True
     while loop:
-        data['name'] = raw_input("Name: ")
         data['surname'] = raw_input("Surname: ")
+        data['name'] = raw_input("Name: ")
         data['dsa'] = True if raw_input("dsa: ") in ("Y",'y','Yes','yes') else False
         alumn = Alumn(**data)
         print 'Alumn %(surname)s %(name)s %(dsa)s created.' % data
@@ -23,3 +23,6 @@ if __name__ == '__main__':
         session.add(alumn)
         session.commit()
         loop = False if raw_input("Continue? ") in ("N",'n','No','no') else True
+
+    for alumn in session.query(Alumn).order_by(Alumn.surname):
+        print '\t', alumn.id, alumn.surname, alumn.name, alumn.dsa, alumn.belongs
