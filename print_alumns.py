@@ -1,6 +1,11 @@
 from sqlalchemy.orm import sessionmaker
 from model import engine, Alumn, AlumnClass, Question
 
+try:
+    from termcolor import colored
+except ImportError:
+    print 'Please install termcolor module'
+
 def print_alumns():
     print 'Alumns in a class'
     for cls in session.query(AlumnClass).order_by(AlumnClass.id):
@@ -12,8 +17,7 @@ def print_alumns():
 
     cls = session.query(AlumnClass).filter(AlumnClass.id == cls_id).first()
     for alumn in cls.alumns:
-        print '\t Surname:', alumn.surname, 'Name:', alumn.name
-        print '\t DSA:', 'Yes' if alumn.dsa else 'No', 'Class:', alumn.belongs.name
+        print '\t', alumn.surname, alumn.name, 'DSA:', colored('Yes', 'yellow') if alumn.dsa else 'No'
     return True
 
 
