@@ -1,6 +1,6 @@
 import random
 from sqlalchemy.orm import sessionmaker
-from model import engine, Alumn, AlumnClass, Question
+from model import engine, Alumn, AlumnClass, Question, Topic
 
 def create_test():
     print 'Print test for a class'
@@ -15,20 +15,35 @@ def create_test():
 
     if not cls: return False
 
-    test_size = int(raw_input('Numero di domande? '))
+    loop = True
+    topic_sequence = list()
+    topic_ids = list()
+    while loop:
+        for topic in session.query(Topic).order_by(Topic.id):
+            print '\t', topic.id, topic.title, topic.did_unit
+
+        topic_id = raw_input('Select topics sequence [%s]: ' % ','.join(topic_ids))
+        if not topic_id: break
+
+        topic = session.query(Topic).filter(Topic.id == int(topic_id)).first()
+
+        if not topic: continue
+
+        topic_sequence.append(topic)
+        topic_ids.append(topic_id)
 
     for alumn in cls.alumns:
-        query = session.query(Question)
-        if alumn.dsa:
-            query = query.filter(Question.qtype != 'OC')
-        qs = query.all()
-        test = list()
-        loop = True
-        while len(test) < test_size:
-            random_choice = random.choice(qs)
-            if random_choice not in test:
-                test.append(random_choice)
-        print test
+        for topic in topic_sequence:
+            questions = topic.questions
+            if alumn.dsa:
+                questions = [ question for question in topic.questions if question.qtype != 'OC' ]
+            test = list()
+            loop = True
+            while len(test) < len(topic_sequence):
+                random_choice = random.choice(questions)
+                if random_choice not in test:
+                    test.append(random_choice)
+            print test
     return True
 
 
