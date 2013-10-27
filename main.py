@@ -1,9 +1,13 @@
 import random
+from datetime import datetime
 from sqlalchemy.orm import sessionmaker
-from model import engine, Alumn, AlumnClass, Question, Topic
+from model import engine, Alumn, AlumnClass, Question, Topic, Test, TestQuestionAssoc
 
 def create_test():
-    print 'Print test for a class'
+    print 'Create test for a class...'
+    title = raw_input('Test title: ')
+    if not title: return False
+
     for cls in session.query(AlumnClass).order_by(AlumnClass.id):
         print '\t', cls.id, cls.name
 
@@ -33,17 +37,23 @@ def create_test():
         topic_ids.append(topic_id)
 
     for alumn in cls.alumns:
-        for topic in topic_sequence:
-            questions = topic.questions
-            if alumn.dsa:
-                questions = [ question for question in topic.questions if question.qtype != 'OC' ]
-            test = list()
-            loop = True
-            while len(test) < len(topic_sequence):
+        current_test = Test(title=title, date=datetime.today(), alumn=alumn)
+        question_selected = list()
+        while len(question_selected) < len(topic_sequence):
+            for topic in topic_sequence:
+                questions = topic.questions
+                if alumn.dsa:
+                    questions = [ question for question in topic.questions if question.qtype != 'OC' ]
                 random_choice = random.choice(questions)
-                if random_choice not in test:
-                    test.append(random_choice)
-            print test
+                if random_choice not in question_selected:
+                    question_selected.append(random_choice)
+        for pos, question in enumerate(question_selected):
+            print pos, question.id
+            a = TestQuestionAssoc(position=pos)
+            a.question = question
+            current_test.questions.append(a)
+        session.add(current_test)
+        session.commit()
     return True
 
 
@@ -54,4 +64,3 @@ if __name__ == '__main__':
     loop = True
     while loop:
         loop = create_test()
-#        loop = False if raw_input("Continue? ") in ("N",'n','No','no') else print_alumns()
