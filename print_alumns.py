@@ -12,10 +12,8 @@ def print_alumns():
 
     cls = session.query(AlumnClass).filter(AlumnClass.id == cls_id).first()
     for alumn in cls.alumns:
-        print '\t Surname:', alumn.surname
-        print '\t Name:', alumn.name
-        print '\t DSA:', alumn.dsa
-        print '\t Class:', alumn.belongs.name
+        print '\t Surname:', alumn.surname, 'Name:', alumn.name
+        print '\t DSA:', 'Yes' if alumn.dsa else 'No', 'Class:', alumn.belongs.name
     return True
 
 
