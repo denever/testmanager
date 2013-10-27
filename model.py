@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
-from sqlalchemy.types import Enum
+from sqlalchemy.types import Enum, Date
 
 engine = engine.create_engine('sqlite:///prova.db')
 Base = declarative_base()
@@ -15,6 +15,7 @@ class Alumn(Base):
     surname = Column(String)
     dsa = Column(Boolean)
     class_id = Column(Integer, ForeignKey('classes.id'))
+    tests = relationship("Test", backref="alumn")
 
     UniqueConstraint('surname', 'name', name='uix_1')
 
@@ -27,7 +28,7 @@ class Alumn(Base):
         return "<%s: %s %s %s>" % (self.__tablename__, self.surname, self.name, self.dsa)
 
     def __str__(self):
-        return 'Alumn %s %s %s' % (self.surname, self.name, self.dsa)
+        return '%s %s' % (self.surname, self.name)
 
 class AlumnClass(Base):
     __tablename__ = 'classes'
@@ -72,5 +73,32 @@ class Question(Base):
 
     def __str__(self):
         return "%s Question (UD: %s) (Type %s): %s" % (self.id, self.topic.did_unit, self.qtype, self.question)#, self.answers)
+
+class TestQuestionAssoc(Base):
+    __tablename__ = 'test_question_assoc'
+    left_id = Column(Integer, ForeignKey('tests.id'), primary_key=True)
+    right_id = Column(Integer, ForeignKey('questions.id'), primary_key=True)
+    position = Column(Integer(50))
+    question = relationship("Question")
+
+class Test(Base):
+    __tablename__ = 'tests'
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String)
+    date = Column(Date)
+    alumn_id = Column(Integer, ForeignKey('alumns.id'))
+    questions = relationship("TestQuestionAssoc")
+    printed = Column(Boolean)
+    submitted = Column(Boolean)
+    vote = Column(Integer)
+
+    def __init__(self, title, date, alumn, printed=False, submitted=True, vote=0):
+        self.title = title
+        self.date = date
+        self.alumn = alumn
+        self.printed = printed
+        self.submitted = submitted
+        self.vote = vote
 
 Base.metadata.create_all(engine)
