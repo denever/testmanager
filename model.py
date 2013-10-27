@@ -70,4 +70,7 @@ class Question(Base):
     def __repr__(self):
         return "<%s: %s %s>" % (self.__tablename__, self.qtype, self.question)
 
+    def __str__(self):
+        return "%s Question (UD: %s) (Type %s): %s" % (self.id, self.topic.did_unit, self.qtype, self.question)#, self.answers)
+
 Base.metadata.create_all(engine)
