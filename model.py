@@ -43,6 +43,9 @@ class AlumnClass(Base):
     def __repr__(self):
         return "<%s: %s %s>" % (self.__tablename__, self.id, self.name)
 
+    def __str__(self):
+        return self.name
+
 class Topic(Base):
     __tablename__ = 'topics'
 
@@ -70,9 +73,9 @@ class Question(Base):
 
     def __repr__(self):
         return "<%s: %s %s>" % (self.__tablename__, self.qtype, self.question)
-
-    def __str__(self):
         return "%s Question (UD: %s) (Type %s): %s" % (self.id, self.topic.did_unit, self.qtype, self.question)#, self.answers)
+    def __str__(self):
+        return "%s (UD: %s, Tipo: %s)" % (self.question, self.topic.did_unit, self.qtype)
 
 class TestQuestionAssoc(Base):
     __tablename__ = 'test_question_assoc'
