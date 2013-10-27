@@ -20,6 +20,14 @@ def print_questions(session):
         print str(question)
     return True
 
+def select_questions(session):
+    id_selected = raw_input("Select question: ")
+    if not id_selected:
+        return False
+    id_selected = int(id_selected)
+    question = session.query(Question).filter(Question.id == id_selected).first()
+    return question
+
 if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -27,4 +35,9 @@ if __name__ == '__main__':
     loop = True
     while loop:
         loop = print_questions(session)
+        if not loop: continue
+        loop = select_questions(session)
+        if not loop: continue
+        print loop
+        print loop.answers
 #        loop = False if raw_input("Continue? ") in ("N",'n','No','no') else print_questions()
