@@ -1,3 +1,4 @@
+# encoding: utf-8
 import sys
 from sqlalchemy.orm import sessionmaker
 from model import engine, Topic, Question
@@ -19,7 +20,13 @@ if __name__ == '__main__':
     loop = True
     while loop:
         data['qtype'] = raw_input("Type: ")
+        if not data['qtype']:
+            loop = False if raw_input("Continue? ") in ("N",'n','No','no') else True
+            continue
         data['question'] = raw_input("Question: ")
+        if not data['question']:
+            loop = False if raw_input("Continue? ") in ("N",'n','No','no') else True
+            continue
         if data['qtype'] in ('BC','bc','b'):
             data['answers'] = '\\item Vero\n\\item Falso'
         else:
@@ -27,7 +34,7 @@ if __name__ == '__main__':
             answer_id = 1
             data['answers'] = str()
             while subloop:
-                answer = raw_input('Answer %s:' % answer_id)
+                answer = raw_input('Answer %s: ' % answer_id)
                 if not answer: break
                 data['answers'] += '\\item %s\n' % answer
                 answer_id += 1
