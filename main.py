@@ -36,19 +36,22 @@ def create_test():
         topic_sequence.append(topic)
         topic_ids.append(topic_id)
 
+    print 'Creating a test with %s questions' % len(topic_sequence)
+
     for alumn in cls.alumns:
         current_test = Test(title=title, date=datetime.today(), alumn=alumn)
         question_selected = list()
-        while len(question_selected) < len(topic_sequence):
-            for topic in topic_sequence:
-                questions = topic.questions
-                if alumn.dsa:
-                    questions = [ question for question in topic.questions if question.qtype != 'OC' ]
+        for topic in topic_sequence:
+            questions = topic.questions
+            if alumn.dsa:
+                questions = [ question for question in topic.questions if question.qtype != 'OC' ]
+            while True:
                 random_choice = random.choice(questions)
                 if random_choice not in question_selected:
                     question_selected.append(random_choice)
+                    break
+        print 'For alumn %s created a test with %s questions' % (alumn, len(question_selected))
         for pos, question in enumerate(question_selected):
-            print pos, question.id
             a = TestQuestionAssoc(position=pos)
             a.question = question
             current_test.questions.append(a)
