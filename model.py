@@ -36,10 +36,24 @@ class AlumnClass(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
     alumns = relationship("Alumn", backref='belongs')
-
+    subject_id = Column(Integer, ForeignKey('subjects.id'))
+    
     def dsa_alumns(self):
         return [alumn for alumn in self.alumns if alumn.dsa]
 
+    def __repr__(self):
+        return "<%s: %s %s>" % (self.__tablename__, self.id, self.name)
+
+    def __str__(self):
+        return self.name
+
+class Subject(Base):
+    __tablename__ = 'subjects'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    topics = relationship("Topic", backref='subject')
+    classes = relationship("AlumnClass", backref='subject')
+    
     def __repr__(self):
         return "<%s: %s %s>" % (self.__tablename__, self.id, self.name)
 
@@ -53,30 +67,54 @@ class Topic(Base):
     did_unit = Column(String, unique=True)
     title = Column(String)
     questions = relationship("Question", backref='topic')
+    subject_id = Column(Integer, ForeignKey('subjects.id'))
 
     def __repr__(self):
         return "<%s: %s %s>" % (self.__tablename__, self.id, self.title)
+
+    def __str__(self):
+         return "%s %s Questions count: %s" % (self.did_unit, self.title, len(self.questions))
 
 class Question(Base):
     __tablename__ = 'questions'
 
     id = Column(Integer, primary_key=True)
     question = Column(String)
-    answers = Column(Text)
+    #answers = Column(Text)
+    answers = relationship("Answer", backref='question')    
     qtype = Column(Enum('BC', 'SC', 'MC', 'OC'))
     topic_id = Column(Integer, ForeignKey('topics.id'))
 
-    def __init__(self, qtype, question, answers):
+    def __init__(self, qtype, question):
         self.qtype = qtype
         self.question = question
-        self.answers = answers
 
     def __repr__(self):
         return "<%s: %s %s>" % (self.__tablename__, self.qtype, self.question)
         return "%s Question (UD: %s) (Type %s): %s" % (self.id, self.topic.did_unit, self.qtype, self.question)#, self.answers)
+
     def __str__(self):
         return "%s (UD: %s, Tipo: %s)" % (self.question, self.topic.did_unit, self.qtype)
 
+class Answer(Base):
+    __tablename__ = 'answers'
+
+    id = Column(Integer, primary_key=True)    
+    question_id = Column(Integer, ForeignKey('questions.id'))
+    answer_text = Column(Text)
+    correct = Column(Boolean)
+
+    def __init__(self, text, correct=False):
+        self.answer_text = text
+        self.correct = correct
+
+    def __repr__(self):
+        return "<%s: %s %s>" % (self.__tablename__, self.answer_text,
+                                self.correct)
+
+    def __str__(self):
+        return '\\item %s' % self.answer_text
+        
 class TestQuestionAssoc(Base):
     __tablename__ = 'test_question_assoc'
     left_id = Column(Integer, ForeignKey('tests.id'), primary_key=True)

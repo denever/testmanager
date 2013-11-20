@@ -1,5 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from model import engine, Alumn, AlumnClass, Question
+from print_alumns import print_alumns, select_class
 
 if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
@@ -8,8 +9,9 @@ if __name__ == '__main__':
     data = dict()
     loop = True
     while loop:
-        for alumn in session.query(Alumn).order_by(Alumn.surname):
-            print '\t', alumn.id, alumn.surname, alumn.name, alumn.dsa, alumn.belongs
+        cls_id = select_class(session)
+        if not cls_id: continue
+        loop = print_alumns(session, cls_id)
 
         id_to_edit = raw_input("Id to edit: ")
         if not id_to_edit:

@@ -1,5 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from model import engine, Alumn, AlumnClass, Question
+from print_subjects import select_subject
 
 if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
@@ -12,6 +13,7 @@ if __name__ == '__main__':
         if not data['name']: break
         ac = AlumnClass(name=data['name'])
         print ac
+        ac.subject = select_subject(session)
         session.add(ac)
         session.commit()
         print 'Class %(name)s created.' % data
