@@ -18,22 +18,33 @@ if __name__ == '__main__':
     except Exception, e:
         print "Error %s" % e
 
-    print "Importing question in which topic?"
-    sbj = select_subject(session)
-    if not sbj:
-        sys.exit(1)
-    current_topic = select_topic(session, sbj)
-    if not current_topic:
+    print "Importing topics in which subject ?"
+    current_subject = select_subject(session)
+    if not current_subject:
         sys.exit(1)
 
     con.row_factory = lite.Row
     cur = con.cursor()
-    cur.execute("Select question, qtype, answers from questions")
-    rows = cur.fetchall()
+    cur.execute("Select did_unit, title from topics")
+    rows = cur.fetchall()    
+    for row in rows:
+        topic = Topic(did_unit=row['did_unit'], title=row['title'])
+        print topic
+        topic.subject = current_subject
+        session.add(topic)
+        session.commit()
+        
+    print "Importing question in each topic..."
+    # current_topic = select_topic(session, current_subject)
+    # if not current_topic:
+    #     sys.exit(1)
 
+    cur.execute("Select question, qtype, answers, topic_id from questions")
+    rows = cur.fetchall()
+    
     for row in rows:
         qa = Question(row['qtype'], row['question'])
-        qa.topic = current_topic
+        qa.topic_id = int(row['topic_id'])
         for answer in row['answers'].split('\n'):
             print answer
             if answer:
@@ -43,4 +54,3 @@ if __name__ == '__main__':
         session.add(qa)
         session.commit()
 
-    print "Importing alumns in which ?"
