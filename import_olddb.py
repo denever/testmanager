@@ -2,7 +2,7 @@ import sys
 import sqlite3 as lite
 
 from sqlalchemy.orm import sessionmaker
-from model import engine, Topic, Question, Answer
+from model import engine, Topic, Question, Answer, AlumnClass, Alumn
 from print_subjects import select_subject, select_topic
 
 if __name__ == '__main__':
@@ -29,7 +29,6 @@ if __name__ == '__main__':
     rows = cur.fetchall()
     for row in rows:
         topic = Topic(did_unit=row['did_unit'], title=row['title'])
-        print topic
         topic.subject = current_subject
         session.add(topic)
         session.commit()
@@ -46,10 +45,34 @@ if __name__ == '__main__':
         qa = Question(row['qtype'], row['question'])
         qa.topic_id = int(row['topic_id'])
         for answer in row['answers'].split('\n'):
-            print answer
             if answer:
                 answ = Answer(answer[6:])
                 answ.question = qa
                 session.add(answ)
         session.add(qa)
-        session.commit()
+    session.commit()
+
+    print "Importing classes..."
+
+    cur.execute("Select name from classes")
+    rows = cur.fetchall()
+
+    for row in rows:
+        ac = AlumnClass(name=row['name'])
+        print "Select subject for class", ac
+        ac.subject = select_subject(session)
+        session.add(ac)
+    session.commit()
+
+    print "Importing classes..."
+    cur.execute("Select alumns.name as name, surname, dsa, classes.name as class from alumns, classes where classes.id=alumns.class_id")
+    rows = cur.fetchall()
+
+    for row in rows:
+        a = Alumn(name=row['name'], surname=row['surname'], dsa=row['dsa'])
+        ac = session.query(AlumnClass).filter(AlumnClass.name == row['class']).first()
+        if not ac:
+            print 'Class %s not found' % row['class']
+        a.belongs = ac
+        session.add(a)
+    session.commit()
