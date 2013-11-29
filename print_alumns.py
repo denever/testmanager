@@ -25,6 +25,7 @@ def print_alumns(session, cls):
 
     for alumn in cls.alumns:
         print '\t', alumn.id, alumn.surname, alumn.name, 'DSA:', colored('Yes', 'yellow') if alumn.dsa else 'No'
+    print 'Total alumns:', len(cls.alumns)
     return True
 
 
