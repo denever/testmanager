@@ -31,6 +31,8 @@ if __name__ == '__main__':
 
         qa = Question(**data)
         qa.topic = current_topic
+        session.add(qa)
+        session.commit()
         
         if data['qtype'] in ('BC','bc','b'):
             true = Answer('Vero')

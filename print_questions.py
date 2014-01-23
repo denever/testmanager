@@ -17,7 +17,7 @@ def print_questions(session):
 
     topic = session.query(Topic).filter(Topic.id == topic_id).first()
     for question in topic.questions:
-        print question.id, question.question
+        print question.id, question.question, question.answers_count
     return True
 
 def select_questions(session):

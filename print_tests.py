@@ -2,6 +2,8 @@ from sqlalchemy.orm import sessionmaker
 from model import engine, Alumn, AlumnClass, Question, Topic, Test, TestQuestionAssoc
 import sys
 from string import Template
+from random import shuffle
+
 
 DOCUMENT ="""
 \\documentclass[a4paper]{article}
@@ -64,11 +66,15 @@ if __name__ == '__main__':
                                                  name=test.alumn.name,
                                                  date=test.date,
                                                  title=test.title,
-                                                 classname=test.alumn.belongs                                             ))
+                                                 classname=test.alumn.belongs
+                                             ))
             sorted_questions = sorted([ (question.position, question.question) for question in test.questions],
                                       key = lambda question: question[0])
             for pos, question in sorted_questions:
-                texfile.write(quest_tmpl.substitute(pos=pos, question=question, answers=question.answers))
+                answers = question.answers
+                shuffle(answers)
+                text_answers = '\n'.join(str(answer) for answer in answers)
+                texfile.write(quest_tmpl.substitute(pos=pos, question=question, answers=text_answers))
             texfile.write(END_DOCUMENT)
             texfile.close()
             test.printed = True

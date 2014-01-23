@@ -96,6 +96,10 @@ class Question(Base):
     def __str__(self):
         return "%s (UD: %s, Tipo: %s)" % (self.question, self.topic.did_unit, self.qtype)
 
+    @property
+    def answers_count(self):
+        return len(self.answers)
+
 class Answer(Base):
     __tablename__ = 'answers'
 
@@ -113,7 +117,7 @@ class Answer(Base):
                                 self.correct)
 
     def __str__(self):
-        return '\\item %s' % self.answer_text
+        return self.answer_text
         
 class TestQuestionAssoc(Base):
     __tablename__ = 'test_question_assoc'
