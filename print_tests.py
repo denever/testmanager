@@ -41,6 +41,10 @@ quest_tmpl = Template("""
 \\end{question}
 """)
 
+answ_tmpl = Template("""
+\\item $answer
+""")
+
 END_DOCUMENT = "\end{document}"
 
 if __name__ == '__main__':
@@ -60,7 +64,9 @@ if __name__ == '__main__':
 
     for test in session.query(Test).filter(Test.printed == False):
         if test.alumn.belongs == cls:
-            texfile = open('%s_%s.tex' % (test.title, test.alumn), 'w')
+            file_name = '%s_%s.tex' % (test.title, test.alumn)
+            file_name = file_name.replace(' ','_')
+            texfile = open(file_name, 'w')
             texfile.write(DOCUMENT)
             texfile.write(header_tmpl.substitute(surname=test.alumn.surname,
                                                  name=test.alumn.name,
@@ -73,7 +79,7 @@ if __name__ == '__main__':
             for pos, question in sorted_questions:
                 answers = question.answers
                 shuffle(answers)
-                text_answers = '\n'.join(str(answer) for answer in answers)
+                text_answers = '\n'.join(answ_tmpl.substitute(answer=answer) for answer in answers)
                 texfile.write(quest_tmpl.substitute(pos=pos, question=question, answers=text_answers))
             texfile.write(END_DOCUMENT)
             texfile.close()

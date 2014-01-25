@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Enum, Date
+import sys
 
 engine = engine.create_engine('sqlite:///prova.db')
 Base = declarative_base()
@@ -37,7 +38,7 @@ class AlumnClass(Base):
     name = Column(String, unique=True)
     alumns = relationship("Alumn", backref='belongs')
     subject_id = Column(Integer, ForeignKey('subjects.id'))
-    
+
     def dsa_alumns(self):
         return [alumn for alumn in self.alumns if alumn.dsa]
 
@@ -53,7 +54,7 @@ class Subject(Base):
     name = Column(String)
     topics = relationship("Topic", backref='subject')
     classes = relationship("AlumnClass", backref='subject')
-    
+
     def __repr__(self):
         return "<%s: %s %s>" % (self.__tablename__, self.id, self.name)
 
@@ -81,7 +82,7 @@ class Question(Base):
     id = Column(Integer, primary_key=True)
     question = Column(String)
     #answers = Column(Text)
-    answers = relationship("Answer", backref='question')    
+    answers = relationship("Answer", backref='question')
     qtype = Column(Enum('BC', 'SC', 'MC', 'OC'))
     topic_id = Column(Integer, ForeignKey('topics.id'))
 
@@ -103,7 +104,7 @@ class Question(Base):
 class Answer(Base):
     __tablename__ = 'answers'
 
-    id = Column(Integer, primary_key=True)    
+    id = Column(Integer, primary_key=True)
     question_id = Column(Integer, ForeignKey('questions.id'))
     answer_text = Column(Text)
     correct = Column(Boolean)
@@ -118,7 +119,7 @@ class Answer(Base):
 
     def __str__(self):
         return self.answer_text
-        
+
 class TestQuestionAssoc(Base):
     __tablename__ = 'test_question_assoc'
     left_id = Column(Integer, ForeignKey('tests.id'), primary_key=True)
@@ -147,3 +148,11 @@ class Test(Base):
         self.vote = vote
 
 Base.metadata.create_all(engine)
+
+def safe_prompt(session, message):
+    try:
+        return raw_input(message)
+    except KeyboardInterrupt:
+        session.commit()
+        session.close()
+        sys.exit(0)

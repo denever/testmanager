@@ -1,5 +1,5 @@
 from sqlalchemy.orm import sessionmaker
-from model import engine, Topic, Question, Answer
+from model import engine, Topic, Question, Answer, safe_prompt
 from print_questions import print_questions, select_questions
 
 try:
@@ -22,7 +22,7 @@ def print_answers_not_associated(session, id_answ):
     return True
     
 def select_answers(session):
-    id_selected = raw_input("Select answer: ")
+    id_selected = safe_prompt(session, "Select answer: ")
     if not id_selected:
         return False
     id_selected = int(id_selected)
@@ -42,7 +42,7 @@ if __name__ == '__main__':
             answers_noassoc = session.query(Answer).filter(Answer.question == None).filter(Answer.id < last_id).all()
             for answer in answers_noassoc:
                 print answer.id, answer
-            if raw_input("Assign all this answers? ") in ("N",'n','No','no'):
+            if safe_prompt(session, "Assign all this answers? ") in ("N",'n','No','no'):
                 answer = select_answers(session)
                 if not answer: break
                 answer.question = question
@@ -54,7 +54,7 @@ if __name__ == '__main__':
                     session.add(answer)
                     session.commit()
             print_question(question)
-            if raw_input("Continue? ") in ("N",'n','No','no'):
+            if safe_prompt(session, "Continue? ") in ("N",'n','No','no'):
                 break
             else:
                 continue
