@@ -149,10 +149,3 @@ class Test(Base):
 
 Base.metadata.create_all(engine)
 
-def safe_prompt(session, message):
-    try:
-        return raw_input(message)
-    except KeyboardInterrupt:
-        session.commit()
-        session.close()
-        sys.exit(0)
