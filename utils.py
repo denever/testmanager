@@ -10,7 +10,7 @@ except ImportError:
 
 def safe_prompt(session, message):
     try:
-        return raw_input(message)
+        return raw_input(message).decode('utf-8')
     except KeyboardInterrupt:
         if raw_input("\n\tSave changes? ") in ("Y",'y','Yes','yes'):
             session.commit()
@@ -79,16 +79,18 @@ def print_topics(session, sbj):
 
 def print_questions(session):
     subject = select_subject(session)
+    if not subject: return False
     topic = select_topic(session, subject)
+    if not topic: return False    
     for question in topic.questions:
         print question.id, question.question, question.answers_count
     return True
 
 def select_question(session):
-    print_questions(session)
+    status = print_questions(session)
+    if not status: return False
     id_selected = safe_prompt(session, "Select question: ")
-    if not id_selected:
-        return False
+    if not id_selected: return False
     id_selected = int(id_selected)
     question = session.query(Question).filter(Question.id == id_selected).first()
     return question
@@ -117,7 +119,7 @@ def print_answers(session, question):
         print '\t', answer.id, answer
     return True
 
-def select_answers(session, question):
+def select_answer(session, question):
     print_answers(session, question)
     id_selected = safe_prompt(session, "Select answer: ")
     if not id_selected:

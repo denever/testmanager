@@ -26,15 +26,25 @@ if __name__ == '__main__':
 
         print_answers(session, question)
 
+        if safe_prompt(session, "Edit answers? ") in ("Y",'y','Yes','yes'):
+            while True:
+                answer = select_answer(session, question)
+                if not answer: break
+                datain = safe_prompt(session, "Answer text [%s]: " % answer.answer_text)
+                answer.answer_text = datain
+                session.add(answer)
+                session.commit()
+
         if safe_prompt(session, "Add answers? ") in ("Y",'y','Yes','yes'):
-            subloop = True
-            answer_id = 1
-            while subloop:
+            answer_id = int(1)
+            while True:
                 answer = safe_prompt(session, 'Answer %s: ' % answer_id)
                 if not answer: break
                 answ = Answer(answer)
                 answ.question = question
                 session.add(answ)
+                session.commit()
                 answer_id += 1
+
         session.add(question)
         session.commit()

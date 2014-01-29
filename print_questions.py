@@ -6,11 +6,7 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine, autoflush=False, autocommit=False)
     session = Session()
 
-    loop = True
-    while loop:
-        loop = print_questions(session)
-        if not loop: continue
-        loop = select_question(session)
-        if not loop: continue
-        print_question(loop)
-#        loop = False if safe_prompt("Continue? ") in ("N",'n','No','no') else print_questions()
+    while True:
+        question = select_question(session)
+        if not question: continue
+        print_question(question)
