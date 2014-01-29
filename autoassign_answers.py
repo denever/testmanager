@@ -1,19 +1,7 @@
+import readline
 from sqlalchemy.orm import sessionmaker
-from model import engine, Topic, Question, Answer, safe_prompt
-from print_questions import print_questions, select_questions
-
-try:
-    from termcolor import colored
-except ImportError:
-    print 'Please install termcolor module'
-
-def print_question(question):
-    last_id = int(0)
-    print question.id, question
-    for answer in question.answers:
-        print '\t',answer.id, answer
-        last_id = answer.id
-    return last_id
+from model import engine, Topic, Question, Answer
+from utils import print_question, print_questions, select_question, safe_prompt
 
 def print_answers_not_associated(session, id_answ):
     answers_noassoc = session.query(Answer).filter(Answer.question == None).filter(Answer.id < id_answ)
