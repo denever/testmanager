@@ -1,9 +1,10 @@
-from sqlalchemy.orm import sessionmaker
-from model import engine, Alumn, AlumnClass, Question, Topic, Test, TestQuestionAssoc
 import sys
+
 from string import Template
 from random import shuffle
-
+from sqlalchemy.orm import sessionmaker
+from model import engine, Alumn, AlumnClass, Question, Topic, Test, TestQuestionAssoc
+from utils import safe_prompt
 
 DOCUMENT ="""
 \\documentclass[a4paper]{article}
@@ -54,7 +55,7 @@ if __name__ == '__main__':
     for cls in session.query(AlumnClass).order_by(AlumnClass.id):
         print '\t', cls.id, cls.name
 
-    cls_id = raw_input('Select a class id: ')
+    cls_id = safe_prompt(session, 'Select a class id: ')
 
     if not cls_id: sys.exit(1)
 
