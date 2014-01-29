@@ -1,29 +1,11 @@
-from sqlalchemy.orm import sessionmaker
-from model import engine, Topic, Question, Answer, safe_prompt
-from print_questions import print_questions, select_questions
 import re
 import sys
 
+from sqlalchemy.orm import sessionmaker
+from model import engine, Topic, Question, Answer
+from utils import print_questions, print_question, select_question, select_subject, select_topic, safe_prompt
+
 match_command = re.compile('(?P<command>\w)(?P<ans_id>\d+)(-(?P<ans2_id>\d+)){0,1}(:(?P<q_id>\d+)){0,1}')
-
-try:
-    from termcolor import colored
-except ImportError:
-    print 'Please install termcolor module'
-
-def print_question(question):
-    if question.answers_count % 2 == 1 or question.answers_count == 0:
-        try:
-            print colored(question.id, 'red'), question
-        except NameError:
-            print '>>>>>>', question.id, question, '<<<<<<'
-    else:
-        print question.id, question
-    last_id = int(0)
-    for answer in question.answers:
-        print '\t',answer.id, answer
-        last_id = answer.id
-    return last_id
 
 def print_available_answers(session, id_answ):
     answers_noassoc = session.query(Answer).filter(Answer.question == None).filter(Answer.id <= id_answ).all()
@@ -42,14 +24,16 @@ def select_answers(session):
 if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
+
+    subject = select_subject(session)
+    selected_topic = select_topic(session, subject)
+
     questions = list()
     try:
         start_id = sys.argv[1]
-        questions = session.query(Question).filter(Question.id >= start_id)
+        questions = session.query(Question).filter(Question.topic == selected_topic).filter(Question.id >= start_id)
     except:
-        questions = session.query(Question).all()
-
-
+        questions = session.query(Question).filter(Question.topic == selected_topic).all()
 
     for question in questions:
         last_id = print_question(question)
