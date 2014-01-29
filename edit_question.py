@@ -1,5 +1,5 @@
 from sqlalchemy.orm import sessionmaker
-from model import engine, Alumn, AlumnClass, Question
+from model import engine, Alumn, AlumnClass, Question, Answer
 from utils import select_question, print_answers, safe_prompt
 
 if __name__ == '__main__':
@@ -25,3 +25,16 @@ if __name__ == '__main__':
             session.commit()
 
         print_answers(session, question)
+
+        if safe_prompt(session, "Add answers? ") in ("Y",'y','Yes','yes'):
+            subloop = True
+            answer_id = 1
+            while subloop:
+                answer = safe_prompt(session, 'Answer %s: ' % answer_id)
+                if not answer: break
+                answ = Answer(answer)
+                answ.question = question
+                session.add(answ)
+                answer_id += 1
+        session.add(question)
+        session.commit()
