@@ -5,7 +5,7 @@ try:
     from termcolor import colored
 except ImportError:
     print 'Please install termcolor module'
-    def colored(color, string):
+    def colored(string, color):
         return '>>>>>', string, '<<<<'
 
 def safe_prompt(session, message):
@@ -95,10 +95,7 @@ def select_question(session):
 
 def print_question(question):
     if question.answers_count % 2 == 1 or question.answers_count == 0:
-        try:
-            print colored(question.id, 'red'), question
-        except NameError:
-            print '>>>>>>', question.id, question, '<<<<<<'
+        print colored(question.id, 'red'), question
     else:
         print question.id, question
     last_id = int(0)
