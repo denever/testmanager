@@ -1,6 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from model import engine, Alumn, AlumnClass, Question
-from print_subjects import select_subject
+from utils import print_classes, select_subject, safe_prompt
 
 if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
@@ -9,7 +9,7 @@ if __name__ == '__main__':
     loop = True
     data = dict()
     while loop:
-        data['name'] = raw_input("Class name: ")
+        data['name'] = safe_prompt(session, "Class name: ")
         if not data['name']: break
         ac = AlumnClass(name=data['name'])
         print ac
@@ -17,7 +17,6 @@ if __name__ == '__main__':
         session.add(ac)
         session.commit()
         print 'Class %(name)s created.' % data
-        loop = False if raw_input('Create another class? ') in ("N",'n','No','no') else True
+        loop = False if safe_prompt(session, 'Create another class? ') in ("N",'n','No','no') else True
 
-    for cls in session.query(AlumnClass).order_by(AlumnClass.id):
-        print '\t', cls.id, cls.name
+    print_classes(session)

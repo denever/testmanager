@@ -128,3 +128,9 @@ def select_answers(session, question):
     id_selected = int(id_selected)
     answer = session.query(Answer).filter(Answer.id == id_selected).first()
     return answer
+
+def print_subjects(session):
+    print 'Subjects'
+    for subject in session.query(Subject).order_by(Subject.id):
+        print '\t', subject.id, subject.name
+    return True

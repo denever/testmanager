@@ -1,5 +1,6 @@
 from sqlalchemy.orm import sessionmaker
-from model import engine, Alumn, AlumnClass, Question
+from model import engine
+from utils import print_classes
 import sys
 
 try:
@@ -13,5 +14,4 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    for cls in session.query(AlumnClass).order_by(AlumnClass.id):
-        print '\t', cls.id, cls.name, cls.subject        
+    print_classes(session)

@@ -1,5 +1,6 @@
 from sqlalchemy.orm import sessionmaker
-from model import engine, Alumn, AlumnClass, Question
+from model import engine
+from utils import select_class, select_alumn
 
 if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
@@ -8,13 +9,10 @@ if __name__ == '__main__':
     data = dict()
     loop = True
     while loop:
-        for alumn in session.query(Alumn).order_by(Alumn.surname):
-            print '\t', alumn.id, alumn.surname, alumn.name, alumn.dsa, alumn.belongs
-
-        id_to_delete = raw_input("Id to delete: ")
-        if not id_to_delete:
-            break
-        id_to_delete = int(id_to_delete)
-        alumn = session.query(Alumn).filter(Alumn.id == id_to_delete).first()
+        cls = select_class(session)
+        if not cls: continue
+        alumn = select_alumn(session, cls)
+        if not alumn: continue
+        print 'Deleting alumn %s' % alumn
         session.delete(alumn)
         session.commit()

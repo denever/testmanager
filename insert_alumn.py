@@ -1,28 +1,26 @@
 from sqlalchemy.orm import sessionmaker
 from model import engine, Alumn, AlumnClass, Question
+from utils import print_alumns, select_class, safe_prompt
 
 if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
     data = dict()
-    loop = True
-    while loop:
-        data['surname'] = raw_input("Surname: ")
-        data['name'] = raw_input("Name: ")
-        data['dsa'] = True if raw_input("dsa: ") in ("Y",'y','Yes','yes') else False
+    while True:
+        data['surname'] = safe_prompt(session, "Surname: ")
+        data['name'] = safe_prompt(session, "Name: ")
+        data['dsa'] = True if safe_prompt(session, "dsa: ") in ("Y",'y','Yes','yes') else False
         alumn = Alumn(**data)
         print 'Alumn %(surname)s %(name)s %(dsa)s created.' % data
         print alumn
-        print 'Assign to a class'
-        for cls in session.query(AlumnClass).order_by(AlumnClass.id):
-            print '\t', cls.id, cls.name
 
-        cls_id = raw_input('Select a class id: ')
-        alumn.belongs = session.query(AlumnClass).filter(AlumnClass.id == cls_id).first()
+        cls = None
+        while True:
+            cls = select_class(session)
+            if not cls: continue
+            alumn.belongs = cls
+            break
         session.add(alumn)
         session.commit()
-        loop = False if raw_input("Continue? ") in ("N",'n','No','no') else True
-
-    for alumn in session.query(Alumn).order_by(Alumn.surname):
-        print '\t', alumn.id, alumn.surname, alumn.name, alumn.dsa, alumn.belongs
+        print_alumns(session, cls)

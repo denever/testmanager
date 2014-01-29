@@ -1,5 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from model import engine, Subject
+from utils import print_subjects, safe_prompt
 
 if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
@@ -8,13 +9,11 @@ if __name__ == '__main__':
     loop = True
     data = dict()
     while loop:
-        data['name'] = raw_input("Subject name: ")
+        data['name'] = safe_prompt(session, "Subject name: ")
         if not data['name']: break
         subject = Subject(**data)
         session.add(subject)
         session.commit()
         print 'Subject %(name)s created.' % data
-        loop = False if raw_input('Create another subject? ') in ("N",'n','No','no') else True
-
-    for subject in session.query(Subject).order_by(Subject.id):
-        print '\t', subject.id, subject.name
+        print_subjects(session)
+            
