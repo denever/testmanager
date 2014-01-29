@@ -4,7 +4,7 @@ from string import Template
 from random import shuffle
 from sqlalchemy.orm import sessionmaker
 from model import engine, Alumn, AlumnClass, Question, Topic, Test, TestQuestionAssoc
-from utils import safe_prompt
+from utils import select_class, safe_prompt
 
 DOCUMENT ="""
 \\documentclass[a4paper]{article}
@@ -52,16 +52,11 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    for cls in session.query(AlumnClass).order_by(AlumnClass.id):
-        print '\t', cls.id, cls.name
-
-    cls_id = safe_prompt(session, 'Select a class id: ')
-
-    if not cls_id: sys.exit(1)
-
-    cls = session.query(AlumnClass).filter(AlumnClass.id == cls_id).first()
-
-    if not cls: sys.exit(1)
+    cls = None
+    while True:
+        cls = select_class(session)
+        if not cls: continue
+        break
 
     for test in session.query(Test).filter(Test.printed == False):
         if test.alumn.belongs == cls:
@@ -84,6 +79,7 @@ if __name__ == '__main__':
                 texfile.write(quest_tmpl.substitute(pos=pos, question=question, answers=text_answers))
             texfile.write(END_DOCUMENT)
             texfile.close()
+            session.rollback()
             test.printed = True
             session.add(test)
             session.commit()
