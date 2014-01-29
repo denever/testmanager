@@ -4,7 +4,7 @@ from utils import select_class, print_alumns
 import sys
 
 if __name__ == '__main__':
-    Session = sessionmaker(bind=engine)
+    Session = sessionmaker(bind=engine, autoflush=False, autocommit=False)
     session = Session()
 
     loop = True

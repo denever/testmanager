@@ -3,7 +3,7 @@ from model import engine
 from utils import select_subject, select_topic
 
 if __name__ == '__main__':
-    Session = sessionmaker(bind=engine)
+    Session = sessionmaker(bind=engine, autoflush=False, autocommit=False)
     session = Session()
 
     loop = True
