@@ -53,9 +53,11 @@ def create_test():
                     break
         print 'For alumn %s created a test with %s questions' % (alumn, len(question_selected))
         for pos, question in enumerate(question_selected):
-            a = TestQuestionAssoc(position=pos)
-            a.question = question
-            current_test.questions.append(a)
+            tqa = TestQuestionAssoc(position=pos)
+            tqa.question = question
+            current_test.questions.append(tqa)
+            session.add(tqa)
+            session.add(question)
         session.add(current_test)
         session.commit()
     return True
