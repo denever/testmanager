@@ -1,4 +1,5 @@
 import sys
+import readline
 from model import *
 
 try:
