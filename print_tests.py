@@ -46,7 +46,18 @@ answ_tmpl = Template("""
 \\item $answer
 """)
 
-END_DOCUMENT = "\end{document}"
+END_DOCUMENT = """
+\\begin{flushright}
+Risposte corrette: ........
+
+Risposte sbagliate: .........
+
+Risposte parziali: ..........
+
+Voto: ..................
+\\end{flushright}
+\end{document}
+"""
 
 if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
@@ -76,7 +87,10 @@ if __name__ == '__main__':
                 answers = question.answers
                 shuffle(answers)
                 text_answers = '\n'.join(answ_tmpl.substitute(answer=answer) for answer in answers)
-                texfile.write(quest_tmpl.substitute(pos=pos, question=question, answers=text_answers))
+                try:
+                    texfile.write(quest_tmpl.substitute(pos=pos, question=question, answers=text_answers))
+                except Exception, e:
+                    print question.id
             texfile.write(END_DOCUMENT)
             texfile.close()
             session.rollback()
